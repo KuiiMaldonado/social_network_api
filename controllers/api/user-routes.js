@@ -23,8 +23,10 @@ router.get('/', (req, res) => {
 router.get('/:userId', async (req, res) => {
     try {
         const user = await User.findById(req.params.userId).exec();
-        console.log(user);
-        res.status(200).json(user);
+        if (user)
+            res.status(200).json(user);
+        else
+            res.status(404).json({message: 'User doesn\'t exist'});
     }catch (err) {
         console.error(err);
         res.status(500).json(err);
