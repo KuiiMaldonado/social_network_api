@@ -11,7 +11,7 @@ router.get('/', (req, res) => {
 });
 
 //Get single user by id with thoughts and friends data populated.
-router.get('/:id', (req, res) => {
+router.get('/:userId', (req, res) => {
     try {
 
     }catch (err) {
@@ -31,7 +31,7 @@ router.post('/', (req, res) => {
 });
 
 //Update a user by  its id
-router.put('/:id', (req, res) => {
+router.put('/:userId', (req, res) => {
     try {
 
     }catch (err) {
@@ -41,7 +41,7 @@ router.put('/:id', (req, res) => {
 });
 
 //Delete user by its id
-router.delete('/:id', (req, res) => {
+router.delete('/:userId', (req, res) => {
     try {
 
     }catch (err) {
