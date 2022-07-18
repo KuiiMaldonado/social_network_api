@@ -1,9 +1,18 @@
 const router = require('express').Router();
+const {User, Thought, Reaction} = require('../../models/index');
 
 //Get all users
 router.get('/', (req, res) => {
     try {
-
+        User.find({}, (err, result) => {
+            if (result) {
+                res.status(200).json(result);
+            }
+            else {
+                console.log('Something went wrong!');
+                res.status(500).json({message: 'something went wrong'});
+            }
+        });
     }catch (err) {
         console.error(err);
         res.status(500).json(err);
@@ -11,9 +20,11 @@ router.get('/', (req, res) => {
 });
 
 //Get single user by id with thoughts and friends data populated.
-router.get('/:userId', (req, res) => {
+router.get('/:userId', async (req, res) => {
     try {
-
+        const user = await User.findById(req.params.userId).exec();
+        console.log(user);
+        res.status(200).json(user);
     }catch (err) {
         console.error(err);
         res.status(500).json(err);
@@ -21,9 +32,18 @@ router.get('/:userId', (req, res) => {
 });
 
 //Create a new user
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
     try {
+        const newUser = new User({username: req.body.username, email:req.body.email});
+        await newUser.save();
 
+        if (newUser) {
+            res.status(200).json(newUser);
+        }
+        else {
+            console.log('Something went wrong!');
+            res.status(500).json({message: 'something went wrong'});
+        }
     }catch (err) {
         console.error(err);
         res.status(500).json(err);

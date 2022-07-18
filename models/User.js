@@ -12,7 +12,7 @@ const userSchema = new Schema(
             type: String,
             unique: true,
             required: true,
-            match: '/^[a-z\.]{6,30}@[a-z]+\.[a-z]+$/',
+            match: /([a-z.]){6,30}@([a-z])+\.([a-z])+/,
         },
         thoughts: [
             {
