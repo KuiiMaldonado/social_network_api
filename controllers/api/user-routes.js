@@ -63,9 +63,13 @@ router.put('/:userId', (req, res) => {
 });
 
 //Delete user by its id
-router.delete('/:userId', (req, res) => {
+router.delete('/:userId', async (req, res) => {
     try {
-
+        const isDeleted = await User.findByIdAndDelete(req.params.userId);
+        if (isDeleted)
+            res.status(200).json(isDeleted);
+        else
+            res.status(400).json({message: 'User doesn\'t exist'});
     }catch (err) {
         console.error(err);
         res.status(500).json(err);
