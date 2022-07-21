@@ -23,6 +23,7 @@ router.get('/', (req, res) => {
 router.get('/:userId', async (req, res) => {
     try {
         const user = await User.findById(req.params.userId).exec();
+        await user.populate('friends');
         if (user)
             res.status(200).json(user);
         else
