@@ -38,8 +38,28 @@ router.get('/:thoughtId', (req, res) => {
 });
 
 //Add a new thought. Need to push it to the user's thoughts array.
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
     try {
+        //We need to make sure the user exists before creating a thought
+        const user = await User.findOne({username: req.body.username, _id: req.body.userId}).exec();
+        if (user) {
+            const newThought = new Thought({thoughtText: req.body.thoughtText, username: req.body.username, userId: req.body.userId});
+            await newThought.save();
+
+            if (newThought) {
+                await user.updateOne({$addToSet: {thoughts: newThought._id}});
+                await user.save();
+                res.status(200).json({message: 'Thought added!', payload: newThought});
+            }
+            else {
+                console.log('Something went wrong!');
+                res.status(500).json({message: 'something went wrong'});
+            }
+        }
+        else {
+            res.status(404).json({message: 'User doesn\'t exist'});
+        }
+
 
     }catch (err) {
         console.error(err);
