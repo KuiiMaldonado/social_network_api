@@ -53,9 +53,16 @@ router.post('/', async (req, res) => {
 });
 
 //Update a user by  its id
-router.put('/:userId', (req, res) => {
+router.put('/:userId', async (req, res) => {
     try {
-
+        const isUpdated = await User.findByIdAndUpdate(req.params.userId,
+            {$set: req.body},
+            {runValidators: true, new:true});
+        console.log(isUpdated);
+        if (isUpdated)
+            res.status(200).json({message: 'User updated!', payload: isUpdated});
+        else
+            res.status(400).json({message: 'User doesn\'t exist'});
     }catch (err) {
         console.error(err);
         res.status(500).json(err);
