@@ -98,9 +98,15 @@ router.delete('/:thoughtId', async (req, res) => {
 });
 
 //create a reaction stored in a single thought's reactions array field
-router.post('/:thoughtId/reactions', (req, res) => {
+router.post('/:thoughtId/reactions', async (req, res) => {
     try {
-
+        const updatedThought = await Thought.findOneAndUpdate(req.params.thoughtId,
+            {$addToSet: {reactions: req.body}},
+            {runValidators: true, new: true});
+        if (updatedThought)
+            res.status(200).json({message: 'Reaction added!'});
+        else
+            res.status(404).json({message: 'Thought doesn\'t exist'});
     }catch (err) {
         console.error(err);
         res.status(500).json(err);
