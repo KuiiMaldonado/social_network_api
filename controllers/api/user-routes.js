@@ -62,7 +62,7 @@ router.put('/:userId', async (req, res) => {
         if (isUpdated)
             res.status(200).json({message: 'User updated!', payload: isUpdated});
         else
-            res.status(400).json({message: 'User doesn\'t exist'});
+            res.status(404).json({message: 'User doesn\'t exist'});
     }catch (err) {
         console.error(err);
         res.status(500).json(err);
@@ -76,7 +76,7 @@ router.delete('/:userId', async (req, res) => {
         if (isDeleted)
             res.status(200).json({message: 'User deleted', payload: isDeleted});
         else
-            res.status(400).json({message: 'User doesn\'t exist'});
+            res.status(404).json({message: 'User doesn\'t exist'});
     }catch (err) {
         console.error(err);
         res.status(500).json(err);
@@ -102,11 +102,11 @@ router.post('/:userId/friends/:friendId', async (req, res) => {
                 res.status(200).json({message: 'Friend added!'});
             }
             else {
-                res.status(400).json({message: 'Friend\'s id doesn\'t exist'});
+                res.status(4004).json({message: 'Friend\'s id doesn\'t exist'});
             }
         }
         else {
-            res.status(400).json({message: 'User doesn\'t exist'});
+            res.status(404).json({message: 'User doesn\'t exist'});
         }
     }catch (err) {
         console.error(err);
@@ -115,9 +115,29 @@ router.post('/:userId/friends/:friendId', async (req, res) => {
 });
 
 //remove a friend from a user's friend list
-router.delete('/:userId/friends/:friendId', (req, res) => {
+router.delete('/:userId/friends/:friendId', async (req, res) => {
     try {
+        //The same as when we add new friends we need to delete from both persons
+        const user = await User.findById(req.params.userId);
+        if (user) {
+            const friend = await User.findById(req.params.friendId).exec();
+            if (friend) {
+                await user.updateOne({$pull: {friends: {$in: [friend._id]}}})
+                await user.save();
 
+                //We need to add the user to the friend's friends list, so they match.
+                await friend.updateOne({$pull: {friends: {$in: [user._id]}}});
+                await friend.save();
+
+                res.status(200).json({message: 'Friend removed!'});
+            }
+            else {
+                res.status(4004).json({message: 'Friend\'s id doesn\'t exist'});
+            }
+        }
+        else {
+            res.status(404).json({message: 'User doesn\'t exist'});
+        }
     }catch (err) {
         console.error(err);
         res.status(500).json(err);
