@@ -58,7 +58,6 @@ router.put('/:userId', async (req, res) => {
         const isUpdated = await User.findByIdAndUpdate(req.params.userId,
             {$set: req.body},
             {runValidators: true, new:true});
-        console.log(isUpdated);
         if (isUpdated)
             res.status(200).json({message: 'User updated!', payload: isUpdated});
         else
@@ -84,9 +83,30 @@ router.delete('/:userId', async (req, res) => {
 });
 
 //Add a new friend to a user's friend list
-router.post('/:userId/friends/:friendId', (req, res) => {
+router.post('/:userId/friends/:friendId', async (req, res) => {
     try {
+        //We make sure the userId actually exists.
+        const user = await User.findById(req.params.userId).exec();
+        if (user) {
+            //If the user exists then we need to check if the friend's id is a valid one.
+            const friend = await User.findById(req.params.friendId).exec();
+            if (friend) {
+                await user.updateOne({$addToSet: {friends: friend._id}})
+                await user.save();
 
+                //We need to add the user to the friend's friends list, so they match.
+                await friend.updateOne({$addToSet: {friends: user._id}});
+                await friend.save();
+
+                res.status(200).json({message: 'Friend added!'});
+            }
+            else {
+                res.status(400).json({message: 'Friend\'s id doesn\'t exist'});
+            }
+        }
+        else {
+            res.status(400).json({message: 'User doesn\'t exist'});
+        }
     }catch (err) {
         console.error(err);
         res.status(500).json(err);
