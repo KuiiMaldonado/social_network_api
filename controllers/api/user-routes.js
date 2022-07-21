@@ -67,7 +67,7 @@ router.delete('/:userId', async (req, res) => {
     try {
         const isDeleted = await User.findByIdAndDelete(req.params.userId);
         if (isDeleted)
-            res.status(200).json(isDeleted);
+            res.status(200).json({message: 'User deleted', payload: isDeleted});
         else
             res.status(400).json({message: 'User doesn\'t exist'});
     }catch (err) {
