@@ -84,9 +84,13 @@ router.put('/:thoughtId', async (req, res) => {
 });
 
 //Delete thought by id
-router.delete('/:thoughtId', (req, res) => {
+router.delete('/:thoughtId', async (req, res) => {
     try {
-
+        const isDeleted = await Thought.findByIdAndDelete(req.params.thoughtId);
+        if (isDeleted)
+            res.status(200).json({message: 'Thought deleted', payload: isDeleted});
+        else
+            res.status(404).json({message: 'Thought doesn\'t exist'});
     }catch (err) {
         console.error(err);
         res.status(500).json(err);
