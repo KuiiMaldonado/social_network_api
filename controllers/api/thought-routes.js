@@ -1,9 +1,18 @@
+const {User, Thought} = require("../../models");
 const router = require('express').Router();
 
 //Get all thoughts
 router.get('/', (req, res) => {
     try {
-
+        Thought.find({}, (err, result) => {
+            if (result) {
+                res.status(200).json(result);
+            }
+            else {
+                console.log('Something went wrong!');
+                res.status(500).json({message: 'something went wrong'});
+            }
+        });
     }catch (err) {
         console.error(err);
         res.status(500).json(err);
