@@ -22,7 +22,15 @@ router.get('/', (req, res) => {
 //Get thought by id
 router.get('/:thoughtId', (req, res) => {
     try {
-
+        Thought.findById(req.params.thoughtId, (err, result) => {
+            if (result) {
+                res.status(200).json(result);
+            }
+            else {
+                console.log('Something went wrong!');
+                res.status(500).json({message: 'something went wrong'});
+            }
+        });
     }catch (err) {
         console.error(err);
         res.status(500).json(err);
