@@ -68,9 +68,15 @@ router.post('/', async (req, res) => {
 });
 
 //Update thought by id
-router.put('/:thoughtId', (req, res) => {
+router.put('/:thoughtId', async (req, res) => {
     try {
-
+        const isUpdated = await Thought.findByIdAndUpdate(req.params.thoughtId,
+            {$set: req.body},
+            {runValidators: true, new:true});
+        if (isUpdated)
+            res.status(200).json({message: 'Thought updated!', payload: isUpdated});
+        else
+            res.status(404).json({message: 'Thought doesn\'t exist'});
     }catch (err) {
         console.error(err);
         res.status(500).json(err);
