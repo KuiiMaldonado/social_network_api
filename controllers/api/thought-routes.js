@@ -117,7 +117,7 @@ router.post('/:thoughtId/reactions', async (req, res) => {
 router.delete('/:thoughtId/reactions', async (req, res) => {
     try {
         const updatedThought = await Thought.findOneAndUpdate({_id: req.params.thoughtId},
-            {$pull: {reactions: {_id: req.body.reactionId}}},
+            {$pull: {reactions: {reactionId: req.body.reactionId}}},
             {runValidators: true, new: true});
         if (updatedThought)
             res.status(200).json({message: 'Reaction deleted!'});

@@ -23,9 +23,10 @@ router.get('/', (req, res) => {
 router.get('/:userId', async (req, res) => {
     try {
         const user = await User.findById(req.params.userId).exec();
-        await user.populate(['friends', 'thoughts']);
-        if (user)
+        if (user) {
+            await user.populate(['friends', 'thoughts']);
             res.status(200).json(user);
+        }
         else
             res.status(404).json({message: 'User doesn\'t exist'});
     }catch (err) {
